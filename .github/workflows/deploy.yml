@@ -3,7 +3,7 @@ name: Deploy to Heroku
 on:
   push:
     branches:
-      - main  # 監聽 main 分支的變更
+      - main
 
 jobs:
   deploy:
@@ -18,10 +18,15 @@ jobs:
           curl https://cli-assets.heroku.com/install.sh | sh
 
       - name: 登入 Heroku
-        run: echo ${{ secrets.HEROKU_API_KEY }} | docker login --username=_ --password-stdin registry.heroku.com
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: heroku auth:token
 
-      - name: 建立 Heroku 遠端
-        run: git remote add heroku https://git.heroku.com/${{ secrets.HEROKU_APP_NAME }}.git
+      - name: 設定 Heroku 遠端
+        run: |
+          git remote add heroku https://git.heroku.com/${{ secrets.HEROKU_APP_NAME }}.git
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
 
       - name: 部署應用至 Heroku
         run: |
