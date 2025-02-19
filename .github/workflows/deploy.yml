@@ -1,1 +1,28 @@
+name: Deploy to Heroku
 
+on:
+  push:
+    branches:
+      - main  # 監聽 main 分支的變更
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 檢查程式碼
+        uses: actions/checkout@v2
+
+      - name: 安裝 Heroku CLI
+        run: |
+          curl https://cli-assets.heroku.com/install.sh | sh
+
+      - name: 登入 Heroku
+        run: echo ${{ secrets.HEROKU_API_KEY }} | docker login --username=_ --password-stdin registry.heroku.com
+
+      - name: 建立 Heroku 遠端
+        run: git remote add heroku https://git.heroku.com/${{ secrets.HEROKU_APP_NAME }}.git
+
+      - name: 部署應用至 Heroku
+        run: |
+          git push heroku main --force
