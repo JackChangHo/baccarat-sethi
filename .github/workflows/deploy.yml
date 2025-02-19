@@ -22,11 +22,12 @@ jobs:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         run: heroku auth:token
 
-      - name: 部署到 Heroku
+      - name: 設定 Heroku 遠端
         run: |
           heroku git:remote --app ${{ secrets.HEROKU_APP_NAME }}
           git config --global user.email "github-actions@github.com"
           git config --global user.name "GitHub Actions"
-          git add .
-          git commit -m "Heroku Auto Deploy"
+
+      - name: 部署應用至 Heroku
+        run: |
           git push heroku main --force
